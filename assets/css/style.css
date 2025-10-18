@@ -1,0 +1,36 @@
+body, html {
+  height: 100%;
+}
+
+.login-container {
+  height: 100vh;
+}
+
+.login-image {
+  background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80');
+  background-size: cover;
+  background-position: center;
+  height: 100%;
+}
+
+.login-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 2rem;
+}
+
+.form-box {
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-box {
+  max-width: 400px;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
