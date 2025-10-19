@@ -1,5 +1,15 @@
 <?php
 session_start();
+
+if (isset($_SESSION['success'])) {
+    echo "
+    <div class='alert alert-success alert-dismissible fade show' role='alert'>
+        <strong>{$_SESSION['success']}</strong>
+        <button type='button' class='btn-close' data-bs-dismiss='alert'></button>
+    </div>
+    ";
+    unset($_SESSION['success']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,5 +42,72 @@ session_start();
     </div>
   </div>
 </nav>
+<div class="container my-5">
+        <a class='btn btn-primary btn-sm' href="/create.php" role="button">New Event</a>
+        <br>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Location</th>
+                    <th>Time</th>
+                    <th>Image_preview</th>
+                    <th>Image_url</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    $connect = mysqli_connect(
+                    'db', # service name
+                    'event_manager', # username
+                    'password', # password
+                    'event_manager' # db table
+                    );
+
+                    if (!$connect) {
+                        die("Connection failed: " . mysqli_connect_error());
+                    }
+
+                    $table_name = "events";
+
+                    $sql = "SELECT * FROM events";
+                    $result = mysqli_query($connect, $sql);
+
+                    if(!$result){
+                        die("invalid query: " . $connection->error);
+                    }
+
+                    while($row = $result->fetch_assoc()){
+                        echo "
+                        <tr>
+                            <td>$row[id]</td>
+                            <td>$row[title]</td>
+                            <td>$row[description]</td>
+                            <td>$row[location]</td>
+                            <td>$row[date_time]</td>
+                            <td><img src='" . $row['image_url'] . "' alt='" . $row['title'] . "' width='150'></td>
+                            <td>$row[image_url]</td>
+                            <td>
+                                <a class='btn btn-primary btn-sm' href='/edit.php?id=$row[id]'>Edit</a>
+                                <a 
+                                    href='/delete.php?id={$row['id']}' 
+                                    class='btn btn-danger btn-sm'
+                                    onclick=\"return confirm('Are you sure you want to delete this event?');\"
+                                >
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                        ";
+                    }
+                ?>
+
+                
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

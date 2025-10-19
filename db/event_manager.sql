@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db:3306
--- Generation Time: Oct 18, 2025 at 03:10 PM
+-- Generation Time: Oct 19, 2025 at 04:13 AM
 -- Server version: 9.4.0
 -- PHP Version: 8.3.26
 
@@ -20,6 +20,25 @@ SET time_zone = "+00:00";
 --
 -- Database: `event_manager`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admins`
+--
+
+CREATE TABLE `admins` (
+  `id` int NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `admins`
+--
+
+INSERT INTO `admins` (`id`, `username`, `password`) VALUES
+(1, 'admin', 'admin123');
 
 -- --------------------------------------------------------
 
@@ -41,7 +60,7 @@ CREATE TABLE `events` (
 --
 
 INSERT INTO `events` (`id`, `title`, `description`, `location`, `date_time`, `image_url`) VALUES
-(1, 'Tech Innovators Summit', 'A gathering of tech leaders sharing breakthroughs in AI, cloud, and Web3.', 'Bengaluru, India', '2025-10-25 10:00:00', 'https://images.unsplash.com/photo-1551836022-4c4c79ecde16?auto=format&fit=crop&w=600&q=80'),
+(1, 'Tech Innovation Summit', 'A gathering of tech leaders sharing breakthroughs in AI, cloud, and Web3.', 'Bengaluru, India', '2025-10-25 10:00:00', 'https://flocard.centralindia.cloudapp.azure.com/temp/631c8470-0b58-40a9-8e62-9a5239ba6811_event_images%20(9).jpg'),
 (2, 'Music Under the Stars', 'A live acoustic night with indie artists and soulful performances.', 'Goa, India', '2025-10-28 19:30:00', 'https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=600&q=80'),
 (3, 'Startup Pitch Night', 'Budding entrepreneurs pitch their innovative ideas to investors and mentors.', 'Hyderabad, India', '2025-10-30 17:00:00', 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=80'),
 (4, 'Art & Culture Fest', 'A colorful celebration of art, music, dance, and food.', 'Delhi, India', '2025-11-02 12:00:00', 'https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?auto=format&fit=crop&w=600&q=80'),
