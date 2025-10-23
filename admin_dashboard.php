@@ -43,7 +43,13 @@ if (isset($_SESSION['success'])) {
   </div>
 </nav>
 <div class="container my-5">
+    <div class="card shadow-sm">
+    <div class="card-header bg-dark text-white text-center">
+      <h4 class="mb-0">Update Events</h4>
+    </div>
+    <div class="text-end my-3 mx-3">
         <a class='btn btn-primary btn-sm' href="/create.php" role="button">New Event</a>
+        </div>
         <br>
         <table class="table">
             <thead>
@@ -109,5 +115,71 @@ if (isset($_SESSION['success'])) {
             </tbody>
         </table>
     </div>
+    <div class="container my-5">
+         <div class="card shadow-sm">
+    <div class="card-header bg-dark text-white text-center">
+      <h4 class="mb-0">Event Registration Details</h4>
+    </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    $connect = mysqli_connect(
+                        'db',
+                        'event_manager',
+                        'password',
+                        'event_manager'
+                    );
+
+                    if (!$connect) {
+                        die("Connection failed: " . mysqli_connect_error());
+                    }
+
+                    $sql = "
+                        SELECT 
+                            events.title AS event_name,
+                            users.username,
+                            users.email
+                        FROM 
+                            users
+                        JOIN 
+                            events 
+                        ON 
+                            users.event_id = events.id
+                        ORDER BY 
+                            events.title;
+                    ";
+
+                    $result = mysqli_query($connect, $sql);
+
+                     if (mysqli_num_rows($result) > 0) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo "
+                            <tr>
+                                <td>{$row['event_name']}</td>
+                                <td>{$row['username']}</td>
+                                <td>{$row['email']}</td>
+                            </tr>
+                            ";
+                        }
+                    } else {
+                        echo "
+                        <tr>
+                            <td colspan='3'>No registrations found</td>
+                        </tr>
+                        ";
+                    }
+                    ?>
+                
+            </tbody>
+        </table>
+    </div>
+
 </body>
 </html>
