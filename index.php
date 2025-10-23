@@ -42,7 +42,7 @@ $result = mysqli_query($connect, $query);
             <li class="list-group-item">🕒 <?php echo date("d M Y, h:i A", strtotime($event['date_time'])); ?></li>
           </ul>
           <div class="card-body">
-            <a href="#" class="card-link">Register for the event</a>
+            <a href="/registration.php?event_id=<?php echo $event['id']; ?>" class="card-link">Register for this event</a>
           </div>
         </div>
       </div>
