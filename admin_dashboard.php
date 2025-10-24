@@ -42,6 +42,9 @@ if (isset($_SESSION['success'])) {
     </div>
   </div>
 </nav>
+<div class="text-end my-3 mx-3">
+        <a class='btn btn-primary btn-sm' href="/admin_create.php" role="button">Add Admin</a>
+        </div>
 <div class="container my-5">
     <div class="card shadow-sm">
     <div class="card-header bg-dark text-white text-center">
