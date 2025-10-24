@@ -50,12 +50,12 @@ A secure PHP/MySQL web app for managing student records (CRUD operations).
 
 ## Tech Stack
 
-- Backend: PHP 8 + Apache
-- Frontend: HTML, CSS, Bootstrap)
-- Database: MySQL 8.0
+    - Backend: PHP 8 + Apache
+    - Frontend: HTML, CSS, Bootstrap)
+    - Database: MySQL 8.0
 
 ## Security
 
-- Prepared statements (SQL injection prevention).
-- Password hashing.
-- Input validation.
+    - Prepared statements (SQL injection prevention).
+    - Password hashing.
+    - Input validation.
