@@ -29,6 +29,13 @@ if (isset($_SESSION['success'])) {
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Actions</a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#UpdateEvents">Update Events</a></li>
+        <li><a class="dropdown-item" href="#RegistrationDetails">Event Registration Details</a></li>
+      </ul>
+    </li>
         <a class="nav-link active" aria-current="page" href="/index.php">Home</a>
 
         <?php if(isset($_SESSION['admin_id']) && isset($_SESSION['admin_username'])): ?>
@@ -45,10 +52,11 @@ if (isset($_SESSION['success'])) {
 <div class="text-end my-3 mx-3">
         <a class='btn btn-primary btn-sm' href="/admin_create.php" role="button">Add Admin</a>
         </div>
+
 <div class="container my-5">
     <div class="card shadow-sm">
     <div class="card-header bg-dark text-white text-center">
-      <h4 class="mb-0">Update Events</h4>
+      <h4 class="mb-0" id="UpdateEvents">Update Events</h4>
     </div>
     <div class="text-end my-3 mx-3">
         <a class='btn btn-primary btn-sm' href="/create.php" role="button">New Event</a>
@@ -121,7 +129,7 @@ if (isset($_SESSION['success'])) {
     <div class="container my-5">
          <div class="card shadow-sm">
     <div class="card-header bg-dark text-white text-center">
-      <h4 class="mb-0">Event Registration Details</h4>
+      <h4 class="mb-0" id="RegistrationDetails">Event Registration Details</h4>
     </div>
         <table class="table">
             <thead>
