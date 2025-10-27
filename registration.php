@@ -16,34 +16,57 @@ $event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
 $event_name = "";
 
 if ($event_id > 0) {
-    $query = "SELECT title FROM events WHERE id = $event_id";
-    $result = mysqli_query($connect, $query);
-    if ($row = mysqli_fetch_assoc($result)) {
+    $stmt = $connect->prepare("SELECT title FROM events WHERE id = ?");
+    $stmt->bind_param("i", $event_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
         $event_name = $row['title'];
     }
+    $stmt->close();
 }
 
 $success_message = "";
 $error_message = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = mysqli_real_escape_string($connect, $_POST['username']);
-    $email = mysqli_real_escape_string($connect, $_POST['email']);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
     $event_id = intval($_POST['event_id']);
 
-    if (!empty($username) && !empty($email) && $event_id > 0) {
-        $sql = "INSERT INTO users (username, email, event_id)
-                VALUES ('$username', '$email', $event_id)";
-
-        if (mysqli_query($connect, $sql)) {
-            $success_message = "Registration successful for event: $event_name";
-        } else {
-            $error_message = "Error: " . mysqli_error($connect);
-        }
-    } else {
+    if (empty($username) || empty($email) || $event_id <= 0) {
         $error_message = "Please fill all fields correctly.";
+    } elseif (!preg_match("/^[a-zA-Z\s'-]{2,50}$/", $username)) {
+        $error_message = "Name should contain only letters and spaces (2-50 characters).";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error_message = "Invalid email format.";
+    } else {
+        //Check if event exists before inserting
+        $stmt = $connect->prepare("SELECT id FROM events WHERE id = ?");
+        $stmt->bind_param("i", $event_id);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows === 0) {
+            $error_message = "Selected event does not exist.";
+        } else {
+            $stmt->close();
+
+            $insert_stmt = $connect->prepare("INSERT INTO users (username, email, event_id) VALUES (?, ?, ?)");
+            $insert_stmt->bind_param("ssi", $username, $email, $event_id);
+
+            if ($insert_stmt->execute()) {
+                $success_message = "Registration successful for event: " . htmlspecialchars($event_name);
+            } else {
+                $error_message = "Database error: " . htmlspecialchars($connect->error);
+            }
+
+            $insert_stmt->close();
+        }
     }
 }
+
+$connect->close();
 ?>
 
 <!DOCTYPE html>

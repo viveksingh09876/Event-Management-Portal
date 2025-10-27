@@ -2,140 +2,134 @@
 session_start();
 
 $connect = mysqli_connect(
-'db', # service name
-'event_manager', # username
-'password', # password
-'event_manager' # db table
+    'db',            // Docker MySQL service name
+    'event_manager', // MySQL username
+    'password',      // MySQL password
+    'event_manager'  // Database name
 );
 
 if (!$connect) {
-die("Connection failed: " . mysqli_connect_error());
+    die("Connection failed: " . mysqli_connect_error());
 }
 
 $table_name = "events";
 
-$title = "";
-$description = "";
-$location = "";
-$date_time = "";
-$image_url = "";
+$title = $description = $location = $date_time = $image_url = "";
+$errorMessage = $successMessage = "";
 
-$errorMessage = "";
-$successMessage = "";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $title = trim($_POST["title"]);
+    $description = trim($_POST["description"]);
+    $location = trim($_POST["location"]);
+    $date_time = trim($_POST["date_time"]);
+    $image_url = trim($_POST["image_url"]);
 
-if($_SERVER['REQUEST_METHOD']=='POST'){
-    $title = $_POST["title"];
-    $description = $_POST["description"];
-    $location = $_POST["location"];
-    $date_time = $_POST["date_time"];
-    $image_url = $_POST["image_url"];
+    if (empty($title) || empty($description) || empty($location) || empty($date_time) || empty($image_url)) {
+        $errorMessage = "All fields are required.";
+    } elseif (strlen($title) > 255) {
+        $errorMessage = "Title cannot exceed 255 characters.";
+    } elseif (!preg_match("/^[a-zA-Z0-9 ,.'-]+$/", $location)) {
+        $errorMessage = "Location contains invalid characters.";
+    } elseif (!filter_var($image_url, FILTER_VALIDATE_URL)) {
+        $errorMessage = "Invalid Image URL format.";
+    } elseif (strtotime($date_time) === false) {
+        $errorMessage = "Please enter a valid date and time.";
+    } else {
+        $stmt = $connect->prepare("INSERT INTO $table_name (title, description, location, date_time, image_url) VALUES (?, ?, ?, ?, ?)");
+        
+        if ($stmt) {
+            $stmt->bind_param("sssss", $title, $description, $location, $date_time, $image_url);
 
-    do{
-        if(empty($title)||empty($description)||empty($location)||empty($date_time)||empty($image_url)){
-                $errorMessage = "All the fields are required";
-                break;
+            if ($stmt->execute()) {
+                $_SESSION['success'] = "Event created successfully!";
+                header("Location: /admin_dashboard.php");
+                exit;
+            } else {
+                $errorMessage = "Database error: " . $stmt->error;
             }
 
-        $sql = "INSERT INTO events (title,description,location,date_time,image_url)".
-                    "VALUES ('$title','$description','$location','$date_time','$image_url')";
-                    $result = mysqli_query($connect, $sql);
-
-        if(!$result){
-            $errorMessage = "Invalid query: ". $connection->error;
-            break;
+            $stmt->close();
+        } else {
+            $errorMessage = "Failed to prepare statement: " . mysqli_error($connect);
         }
-
-        $title = "";
-        $description = "";
-        $location = "";
-        $date_time = "";
-        $image_url = "";
-
-        $_SESSION['success'] = "Event created successfully!";
-        header("location: /admin_dashboard.php");
-        exit;
-    }while (true);
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Events</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <title>Create Event</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container my-5">
-        <h2>Edit Events</h2>
-        <?php
-        if(!empty($errorMessage)){
-            echo "
-            <div class='alert alert-warning alert-dismissible fade show' role='alert'>
-                <strong>$errorMessage</strong>
-                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='close'></button>
-            </div>
-            ";
-        }
-        ?>
-        <form method="post">
-            <input type="hidden" name="id" value="<?php echo $id; ?>">
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label">Title</label>
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" name="title" value="<?php echo $title; ?>">
-                </div>
+<div class="container my-5">
+    <h2>Create New Event</h2>
 
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label">Description</label>
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" name="description" value="<?php echo $description; ?>">
-                </div>
+    <?php if (!empty($errorMessage)): ?>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong><?php echo $errorMessage; ?></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
 
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label">Location</label>
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" name="location" value="<?php echo $location; ?>">
-                </div>
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong><?php echo $_SESSION['success']; ?></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['success']); ?>
+    <?php endif; ?>
 
+    <form method="post">
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">Title</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="title" value="<?php echo htmlspecialchars($title); ?>">
             </div>
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label">Date and Time</label>
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" name="date_time" value="<?php echo $date_time; ?>">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label">Image_Url</label>
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" name="image_url" value="<?php echo $image_url; ?>">
-                </div>
+        </div>
 
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">Description</label>
+            <div class="col-sm-6">
+                <textarea class="form-control" name="description" rows="3"><?php echo htmlspecialchars($description); ?></textarea>
             </div>
-            <?php
-            if(!empty($successMessage)){
-            echo "
-            <div class='alert alert-success alert-dismissible fade show' role='alert'>
-                <strong>$successMessage</strong>
-                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='close'></button>
-            </div>
-            ";
-        }
-            ?>
-            <div class="row mb-3">
-                <div class="offset-sm-3 col-sm-3 d-grid">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-                <div class="col-sm-3 d-grid">
-                    <a class="btn btn-outline-primary" href="/admin-dashboard.php" role="button">Cancel</a>
-                </div>
+        </div>
 
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">Location</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="location" value="<?php echo htmlspecialchars($location); ?>">
             </div>
+        </div>
 
-        </form>
-    </div>
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">Date & Time</label>
+            <div class="col-sm-6">
+                <input type="datetime-local" class="form-control" name="date_time" value="<?php echo htmlspecialchars($date_time); ?>">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label">Image URL</label>
+            <div class="col-sm-6">
+                <input type="url" class="form-control" name="image_url" value="<?php echo htmlspecialchars($image_url); ?>">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="offset-sm-3 col-sm-3 d-grid">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+            <div class="col-sm-3 d-grid">
+                <a class="btn btn-outline-secondary" href="/admin_dashboard.php" role="button">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
