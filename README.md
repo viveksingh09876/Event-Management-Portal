@@ -13,7 +13,8 @@ A secure PHP/MySQL web app for managing events (CRUD operations).
 
 2. Build & Run with Docker Compose:
     - bash
-    - docker-compose up -d --build
+    - docker-compose build
+      docker-compose up
 
     This will start:
     - PHP + Apache container → http://localhost:8080
