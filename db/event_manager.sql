@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db:3306
--- Generation Time: Oct 19, 2025 at 04:13 AM
+-- Generation Time: Oct 27, 2025 at 05:25 AM
 -- Server version: 9.4.0
 -- PHP Version: 8.3.26
 
@@ -38,7 +38,7 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `username`, `password`) VALUES
-(1, 'admin', 'admin123');
+(1, 'admin', '$2y$10$Q6BHW81ztYldK/eOSA/5TukXr7PLxeJ4nUc1K8PHjb1O/IAF/xdga');
 
 -- --------------------------------------------------------
 
@@ -60,15 +60,34 @@ CREATE TABLE `events` (
 --
 
 INSERT INTO `events` (`id`, `title`, `description`, `location`, `date_time`, `image_url`) VALUES
-(1, 'Tech Innovation Summit', 'A gathering of tech leaders sharing breakthroughs in AI, cloud, and Web3.', 'Bengaluru, India', '2025-10-25 10:00:00', 'https://flocard.centralindia.cloudapp.azure.com/temp/631c8470-0b58-40a9-8e62-9a5239ba6811_event_images%20(9).jpg'),
+(1, 'Tech Innovation Summit', 'A gathering of tech leaders sharing breakthroughs in AI, cloud, and Web3.', 'Bengaluru, India', '2025-10-25 10:40:00', 'https://flocard.centralindia.cloudapp.azure.com/temp/631c8470-0b58-40a9-8e62-9a5239ba6811_event_images%20(9).jpg'),
 (2, 'Music Under the Stars', 'A live acoustic night with indie artists and soulful performances.', 'Goa, India', '2025-10-28 19:30:00', 'https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=600&q=80'),
 (3, 'Startup Pitch Night', 'Budding entrepreneurs pitch their innovative ideas to investors and mentors.', 'Hyderabad, India', '2025-10-30 17:00:00', 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=80'),
 (4, 'Art & Culture Fest', 'A colorful celebration of art, music, dance, and food.', 'Delhi, India', '2025-11-02 12:00:00', 'https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?auto=format&fit=crop&w=600&q=80'),
 (5, 'Marathon for Change', 'A community run promoting health, fitness, and social awareness.', 'Mumbai, India', '2025-11-05 06:00:00', 'https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf?auto=format&fit=crop&w=600&q=80');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `event_id` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `events`
@@ -77,14 +96,44 @@ ALTER TABLE `events`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `event_id` (`event_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
