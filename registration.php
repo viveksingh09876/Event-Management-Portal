@@ -55,11 +55,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $insert_stmt = $connect->prepare("INSERT INTO users (username, email, event_id) VALUES (?, ?, ?)");
             $insert_stmt->bind_param("ssi", $username, $email, $event_id);
 
-            if ($insert_stmt->execute()) {
+           if ($insert_stmt->execute()) {
                 $success_message = "Registration successful for event: " . htmlspecialchars($event_name);
             } else {
-                $error_message = "Database error: " . htmlspecialchars($connect->error);
+                if ($connect->errno == 1062) { // Duplicate entry error
+                    $success_message = "You are already registered for this event.";
+                } else {
+                    $error_message = "Database error: " . htmlspecialchars($connect->error);
+                }
             }
+
 
             $insert_stmt->close();
         }
