@@ -27,15 +27,14 @@ A secure PHP/MySQL web app for managing events (CRUD operations).
     - Database: event_manager
     - User: event_manager
     - Password: password
-
     - On first startup, schema from ./db/event_manager.sql will be imported automatically.
 
 4. Access Application
     - http://localhost:8080
 
-5. Default Login
+5. Default Admin Login
     - Username: admin,
-    - Password: admin1234
+    - Password: admin123
 
 ## Features
 
